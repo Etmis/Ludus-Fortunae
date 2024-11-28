@@ -47,6 +47,10 @@ public class AddPlayer : MonoBehaviour
             GameObject player = Instantiate(playerPrefab, playerListPanel);
             player.GetComponentInChildren<TextMeshProUGUI>().text = playerName;
 
+            int playerIndex = GameManager.Instance.players.Count;
+            GameManager.Instance.players.Add(new PlayerData(playerIndex, playerName, true, false, 0));
+            player.GetComponent<RemovePlayer>().index = playerIndex;
+
             nameInputField.text = "";
 
             addPlayerModal.SetActive(false);
