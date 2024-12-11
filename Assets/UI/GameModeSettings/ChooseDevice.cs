@@ -9,7 +9,7 @@ public class ChooseDevice : MonoBehaviour
 
     public void OnOneDeviceButtonClick()
     {
-        GameManager.Instance.mode = Mode.OneDevice;
+        GameData.Instance.playerMode = PlayerMode.OneDevice;
         mode.SetActive(false);
         players.SetActive(true);
     }

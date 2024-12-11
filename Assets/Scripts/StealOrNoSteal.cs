@@ -8,55 +8,20 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+
 public class StealOrNoSteal : MonoBehaviour
 {
-    #region SerializeFields
-    [SerializeField]
-    GameObject endOfRoundModal;
-    [SerializeField]
-    TextMeshProUGUI endOfRoundModalText;
-    [SerializeField]
-    GameObject leaderboard;
-    [SerializeField]
-    TextMeshProUGUI leaderboardText;
-    [SerializeField]
-    TextMeshProUGUI playerNameText;
-    [SerializeField]
-    GameObject nextPlayerModal;
-    [SerializeField]
-    GameObject warning;
-    [SerializeField]
-    TextMeshProUGUI warningText;
-    [SerializeField]
-    TextMeshProUGUI briefcaseText;
-    [SerializeField]
-    Animator animator;
-    [SerializeField]
-    GameObject stealOrNoStealQuestionModal;
-    [SerializeField]
-    GameObject summaryModal;
-    [SerializeField]
-    TextMeshProUGUI firstPlayerName;
-    [SerializeField]
-    TextMeshProUGUI secondPlayerName;
-    [SerializeField]
-    TextMeshProUGUI firstPlayerSummary;
-    [SerializeField]
-    TextMeshProUGUI secondPlayerSummary;
+    #region Variables
+    [SerializeField] GameObject endOfRoundModal, leaderboard, nextPlayerModal, warning, stealOrNoStealQuestionModal, summaryModal;
+    [SerializeField] TextMeshProUGUI endOfRoundModalText, leaderboardText, playerNameText, warningText, briefcaseText;
+    [SerializeField] TextMeshProUGUI firstPlayerName, secondPlayerName, firstPlayerSummary, secondPlayerSummary;
+    [SerializeField] Animator animator;
+
+    private bool isConfirmTurnButtonClicked, isStealOrNoStealButtonClicked, isConfirmWarningButtonClicked, isSummaryConfirmButtonClicked, isEndOfRoundConfirmButtonClicked;
+    private PlayerData lastPlayer;
+    private PlayerData firstPlayer, secondPlayer;
+    private int index, round = 1;
     #endregion
-
-    bool isConfirmTurnButtonClicked = false;
-    bool isStealOrNoStealButtonClicked = false;
-    bool isConfirmWarningButtonClicked = false;
-    bool isSummaryConfirmButtonClicked = false;
-    bool isEndOfRoundConfirmButtonClicked = false;
-
-    PlayerData lastPlayer = null;
-
-    int index = 0;
-    int round = 1;
-    PlayerData firstPlayer;
-    PlayerData secondPlayer;
 
     private async void Start()
     {
@@ -67,21 +32,20 @@ public class StealOrNoSteal : MonoBehaviour
         //GameManager.Instance.players.Add(new PlayerData(2, "name3", true, false, 0));
         //GameManager.Instance.players.Add(new PlayerData(3, "name4", true, false, 0));
 
-        firstPlayer = GameManager.Instance.players[index];
+        firstPlayer = GameData.Instance.players[index];
         index++;
-        secondPlayer = GameManager.Instance.players[index];
+        secondPlayer = GameData.Instance.players[index];
         index++;
 
         while (true)
         {
             if (lastPlayer != null)
             {
-                if (GameManager.Instance.players.Count(player => player.isAlive).Equals(1))
+                if (GameData.Instance.players.Count(player => player.isAlive).Equals(1))
                 {
                     leaderboard.SetActive(true);
                     leaderboardText.text = "Last player standing: " + lastPlayer.name;
                     Debug.Log("Last player standing: " + lastPlayer.name);
-                    Time.timeScale = 0;
                     break;
                 }
                 await ShowNextPlayers();
@@ -97,7 +61,7 @@ public class StealOrNoSteal : MonoBehaviour
                 }
                 await Summary();
                 await ShowEndOfRoundModal();
-                foreach (var player in GameManager.Instance.players)
+                foreach (var player in GameData.Instance.players)
                 {
                     player.isSafe = false;
                 }
@@ -106,27 +70,34 @@ public class StealOrNoSteal : MonoBehaviour
                 secondPlayer = null;
                 index = 0;
                 round++;
-                while (index < GameManager.Instance.players.Count)
+                while (index < GameData.Instance.players.Count)
                 {
-                    if (GameManager.Instance.players[index].isAlive)
+                    if (GameData.Instance.players[index].isAlive)
                     {
-                        firstPlayer = GameManager.Instance.players[index];
+                        firstPlayer = GameData.Instance.players[index];
                         index++;
                         break;
                     }
                     index++;
                 }
 
-                while (index < GameManager.Instance.players.Count)
+                while (index < GameData.Instance.players.Count)
                 {
-                    if (GameManager.Instance.players[index].isAlive)
+                    if (GameData.Instance.players[index].isAlive)
                     {
-                        secondPlayer = GameManager.Instance.players[index];
+                        secondPlayer = GameData.Instance.players[index];
                         index++;
                         break;
                     }
                     index++;
                 }
+            }
+            if (GameData.Instance.players.Count(player => player.isAlive).Equals(1))
+            {
+                leaderboard.SetActive(true);
+                leaderboardText.text = "Last player standing: " + lastPlayer.name;
+                Debug.Log("Last player standing: " + lastPlayer.name);
+                break;
             }
             Debug.Log("Current Players: " + firstPlayer.name + " vs " + secondPlayer.name);
 
@@ -137,9 +108,9 @@ public class StealOrNoSteal : MonoBehaviour
             await StealOrNoStealQuestion();
             await Summary();
 
-            if (GameManager.Instance.players.Count(player => player.isAlive).Equals(1))
+            if (GameData.Instance.players.Count(player => player.isAlive).Equals(1))
             {
-                lastPlayer = GameManager.Instance.players.First(player => player.isAlive);
+                lastPlayer = GameData.Instance.players.First(player => player.isAlive);
             }
 
             Debug.Log("DONE");
@@ -148,6 +119,7 @@ public class StealOrNoSteal : MonoBehaviour
 
     public void OnLeaderboardConfirmButtonClick()
     {
+        GameData.Instance.players.Clear();
         SceneManager.LoadScene("MainMenu");
     }
 
@@ -322,7 +294,7 @@ public class StealOrNoSteal : MonoBehaviour
             else if (secondPlayer.isAlive && !secondPlayer.isSafe)
             {
                 secondPlayerSummary.text = "ANOTHER ROUND";
-                if (index >= GameManager.Instance.players.Count || firstPlayer.Equals(null))
+                if (index >= GameData.Instance.players.Count || firstPlayer.Equals(null))
                 {
                     lastPlayer = secondPlayer;
                 }
@@ -332,11 +304,11 @@ public class StealOrNoSteal : MonoBehaviour
             {
                 firstPlayerSummary.text = "ELIMINATED";
                 firstPlayer = secondPlayer;
-                while (index < GameManager.Instance.players.Count)
+                while (index < GameData.Instance.players.Count)
                 {
-                    if (GameManager.Instance.players[index].isAlive)
+                    if (GameData.Instance.players[index].isAlive)
                     {
-                        secondPlayer = GameManager.Instance.players[index];
+                        secondPlayer = GameData.Instance.players[index];
                         index++;
                         break;
                     }
@@ -347,11 +319,11 @@ public class StealOrNoSteal : MonoBehaviour
             {
                 firstPlayerSummary.text = "SAFE";
                 firstPlayer = secondPlayer;
-                while (index < GameManager.Instance.players.Count)
+                while (index < GameData.Instance.players.Count)
                 {
-                    if (GameManager.Instance.players[index].isAlive)
+                    if (GameData.Instance.players[index].isAlive)
                     {
-                        secondPlayer = GameManager.Instance.players[index];
+                        secondPlayer = GameData.Instance.players[index];
                         index++;
                         break;
                     }
@@ -361,17 +333,17 @@ public class StealOrNoSteal : MonoBehaviour
             else if (firstPlayer.isAlive && !firstPlayer.isSafe)
             {
                 firstPlayerSummary.text = "ANOTHER ROUND";
-                if (index >= GameManager.Instance.players.Count || secondPlayer.Equals(null))
+                if (index >= GameData.Instance.players.Count || secondPlayer.Equals(null))
                 {
                     lastPlayer = firstPlayer;
                 }
                 else
                 {
-                    while (index < GameManager.Instance.players.Count)
+                    while (index < GameData.Instance.players.Count)
                     {
-                        if (GameManager.Instance.players[index].isAlive)
+                        if (GameData.Instance.players[index].isAlive)
                         {
-                            secondPlayer = GameManager.Instance.players[index];
+                            secondPlayer = GameData.Instance.players[index];
                             index++;
                             break;
                         }

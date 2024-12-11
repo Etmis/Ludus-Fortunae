@@ -8,11 +8,11 @@ public class RemovePlayer : MonoBehaviour
 
     public void OnRemovePlayerButtonClick()
     {
-        GameManager.Instance.players.RemoveAt(index);
+        GameData.Instance.players.RemoveAt(index);
         Destroy(gameObject);
-        for (int i = 0; i < GameManager.Instance.players.Count; i++)
+        for (int i = 0; i < GameData.Instance.players.Count; i++)
         {
-            GameManager.Instance.players[i].index = i;
+            GameData.Instance.players[i].index = i;
         }
     }
 }

@@ -7,12 +7,15 @@ public class StartGame : MonoBehaviour
 {
     public void OnStartGameButtonClick()
     {
-        if (GameManager.Instance.gameMode.Equals(GameMode.StealOrNoSteal))
+        if (GameData.Instance.players.Count >= 2)
         {
-            SceneManager.LoadScene(GameMode.StealOrNoSteal.ToString());
-            foreach (var player in GameManager.Instance.players)
+            if (GameData.Instance.gameMode.Equals(GameMode.StealOrNoSteal))
             {
-                Debug.Log($"{player.index}, {player.name}, {player.isAlive}, {player.score}\n{GameManager.Instance.gameMode}, {GameManager.Instance.mode}");
+                SceneManager.LoadScene(GameMode.StealOrNoSteal.ToString());
+                foreach (var player in GameData.Instance.players)
+                {
+                    Debug.Log($"{player.index}, {player.name}, {player.isAlive}, {player.score}\n{GameData.Instance.gameMode}, {GameData.Instance.playerMode}");
+                }
             }
         }
     }

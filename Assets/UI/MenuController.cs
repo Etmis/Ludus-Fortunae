@@ -40,7 +40,7 @@ public class MenuController : MonoBehaviour
     public void OnStealOrNoStealButtonClick()
     {
         gameModeName.GetComponent<TextMeshProUGUI>().text = "Steal Or No Steal";
-        GameManager.Instance.gameMode = GameMode.StealOrNoSteal;
+        GameData.Instance.gameMode = GameMode.StealOrNoSteal;
         gameModeMenu.SetActive(false);
         gameModeSettingsMenu.SetActive(true);
     }

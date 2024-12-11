@@ -2,12 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GameManager : MonoBehaviour
+public class GameData : MonoBehaviour
 {
-    public static GameManager Instance;
+    public static GameData Instance;
 
     public GameMode gameMode;
-    public Mode mode;
+    public PlayerMode playerMode;
     public List<PlayerData> players = new List<PlayerData>();
 
     private void Awake()
@@ -16,10 +16,6 @@ public class GameManager : MonoBehaviour
         {
             Instance = this;
             DontDestroyOnLoad(gameObject);
-        }
-        else
-        {
-            Destroy(gameObject);
         }
     }
 }
@@ -49,7 +45,7 @@ public enum GameMode
 
 }
 
-public enum Mode
+public enum PlayerMode
 {
     OneDevice,
 
