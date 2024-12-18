@@ -10,7 +10,7 @@ using UnityEngine.UI;
 public class TheFinalCase : MonoBehaviour
 {
     #region Variables
-    [SerializeField] GameObject endOfRoundModal, leaderboard, nextPlayerModal, warning, votingModal, summaryModal;
+    [SerializeField] GameObject endOfRoundModal, leaderboard, nextPlayerModal, warning, votingModal;
     [SerializeField] TextMeshProUGUI endOfRoundModalText, leaderboardText, playerNameText, warningText, briefcaseText;
     [SerializeField] TMP_Dropdown playerDropdown;
     [SerializeField] Animator animator, transition;
@@ -39,14 +39,38 @@ public class TheFinalCase : MonoBehaviour
             index = 0;
             if (GameData.Instance.players.Count(player => player.isAlive).Equals(1))
             {
-                PlayerData winner = GameData.Instance.players.First(player => player.isAlive);
-                Debug.Log(winner.name + " wins!");
+                PlayerData winnerPlayer = GameData.Instance.players.First(player => player.isAlive);
+                Debug.Log(winnerPlayer.name + " wins!");
                 leaderboard.SetActive(true);
-                leaderboardText.text = "Winner: " + winner.name;
+                leaderboardText.text = "Winner: " + winnerPlayer.name;
+                winner.Play();
                 return;
             }
 
             GenerateBriefcases();
+
+            if (GameData.Instance.players.Count(player => player.isAlive).Equals(2))
+            {
+                foreach (PlayerData player in GameData.Instance.players.Where(p => p.isAlive))
+                {
+                    Debug.Log(player.name);
+                    Debug.Log(player.isAlive);
+                    await ShowNextPlayer(player);
+                    //await ShowWarning(player);
+                    await ShowBriefcase();
+                }
+
+                PlayerData winnerPlayer = GameData.Instance.players.FirstOrDefault(p => playerBriefcaseMap.ContainsKey(p) && playerBriefcaseMap[p] == "WINNER" && p.isAlive);
+
+                if (winnerPlayer != null)
+                {
+                    Debug.Log(winnerPlayer.name + " wins!");
+                    leaderboard.SetActive(true);
+                    leaderboardText.text = "Winner: " + winnerPlayer.name;
+                    winner.Play();
+                    return;
+                }
+            }
 
             foreach (PlayerData player in GameData.Instance.players.Where(p => p.isAlive))
             {
@@ -58,6 +82,8 @@ public class TheFinalCase : MonoBehaviour
             }
 
             await Voting();
+            await ShowEndOfRoundModal();
+            round++;
         }
     }
 
@@ -107,20 +133,26 @@ public class TheFinalCase : MonoBehaviour
     private void GenerateBriefcases()
     {
         briefcases = new List<string> { "WINNER" };
-        for (int i = 1; i < GameData.Instance.players.Where(p => p.isAlive).Count(); i++)
+        int alivePlayerCount = GameData.Instance.players.Count(player => player.isAlive);
+        for (int i = 1; i < alivePlayerCount; i++)
         {
             briefcases.Add("LOSER");
         }
+
         System.Random random = new System.Random();
         briefcases = briefcases.OrderBy(_ => random.Next()).ToList();
 
         List<PlayerData> alivePlayers = GameData.Instance.players.Where(player => player.isAlive).ToList();
+        playerBriefcaseMap = new Dictionary<PlayerData, string>();
+
         for (int i = 0; i < alivePlayers.Count; i++)
         {
-            var player = GameData.Instance.players[i];
+            var player = alivePlayers[i];
             playerBriefcaseMap[player] = briefcases[i];
         }
     }
+
+
 
     private async Task ShowBriefcase()
     {
@@ -159,11 +191,12 @@ public class TheFinalCase : MonoBehaviour
         PlayerData playerToEliminate = ProcessVotes();
         if (playerToEliminate != null)
         {
-            if (playerBriefcaseMap[playerToEliminate] == "WINNER")
+            if (playerBriefcaseMap[playerToEliminate] == "WINNER" && playerToEliminate.isAlive)
             {
                 Debug.Log(playerToEliminate.name + " wins!");
                 leaderboard.SetActive(true);
                 leaderboardText.text = "Winner: " + playerToEliminate.name;
+                winner.Play();
                 return;
             }
             else
@@ -226,5 +259,24 @@ public class TheFinalCase : MonoBehaviour
         yield return new WaitForSeconds(1);
 
         SceneManager.LoadScene("MainMenu");
+    }
+
+    private async Task ShowEndOfRoundModal()
+    {
+        isEndOfRoundConfirmButtonClicked = false;
+        endOfRoundModalText.text = "End of round " + round;
+        endOfRoundModal.SetActive(true);
+
+        while (!isEndOfRoundConfirmButtonClicked)
+        {
+            await Task.Yield();
+        }
+
+        endOfRoundModal.SetActive(false);
+    }
+
+    public void OnConfirmEndOfRoundButtonClick()
+    {
+        isEndOfRoundConfirmButtonClicked = true;
     }
 }
