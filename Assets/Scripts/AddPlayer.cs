@@ -48,7 +48,7 @@ public class AddPlayer : MonoBehaviour
             player.GetComponentInChildren<TextMeshProUGUI>().text = playerName;
 
             int playerIndex = GameData.Instance.players.Count;
-            GameData.Instance.players.Add(new PlayerData(playerIndex, playerName, true, false, 0));
+            GameData.Instance.players.Add(new PlayerData(playerIndex, playerName, true, false));
             player.GetComponent<RemovePlayer>().index = playerIndex;
 
             nameInputField.text = "";

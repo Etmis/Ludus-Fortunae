@@ -6,57 +6,72 @@ using UnityEngine;
 public class MenuController : MonoBehaviour
 {
     public GameObject mainMenu;
-    public GameObject settingsMenu;
-    public GameObject gameModeMenu;
-    public GameObject gameModeSettingsMenu;
-    public GameObject mode;
+    public GameObject settings;
+    public GameObject gameMode;
+    public GameObject playerMode;
     public GameObject players;
-    public GameObject gameModeName;
+    public GameObject gameModeName1;
+    public GameObject gameModeName2;
 
     public void OnPlayButtonClick()
     {
         mainMenu.SetActive(false);
-        gameModeMenu.SetActive(true);
+        gameMode.SetActive(true);
     }
 
     public void OnGameModeBackButtonClick()
     {
-        gameModeMenu.SetActive(false);
+        gameMode.SetActive(false);
         mainMenu.SetActive(true);
     }
 
     public void OnSettingsButtonClick()
     {
         mainMenu.SetActive(false);
-        settingsMenu.SetActive(true);
+        settings.SetActive(true);
     }
 
     public void OnSettingsBackButtonClick()
     {
-        settingsMenu.SetActive(false);
+        settings.SetActive(false);
         mainMenu.SetActive(true);
     }
 
     public void OnStealOrNoStealButtonClick()
     {
-        gameModeName.GetComponent<TextMeshProUGUI>().text = "Steal Or No Steal";
+        gameModeName1.GetComponent<TextMeshProUGUI>().text = "Steal Or No Steal";
+        gameModeName2.GetComponent<TextMeshProUGUI>().text = "Steal Or No Steal";
         GameData.Instance.gameMode = GameMode.StealOrNoSteal;
-        gameModeMenu.SetActive(false);
-        gameModeSettingsMenu.SetActive(true);
+        gameMode.SetActive(false);
+        playerMode.SetActive(true);
     }
 
-    public void OnGameModeSettingsBackButtonClick()
+    public void OnTheFinalCaseButtonClick()
     {
-        if (players.activeSelf && !mode.activeSelf)
-        {
-            players.SetActive(false);
-            mode.SetActive(true);
-        }
-        else if (!players.activeSelf && mode.activeSelf)
-        {
-            gameModeSettingsMenu.SetActive(false);
-            gameModeMenu.SetActive(true);
-        }
+        gameModeName1.GetComponent<TextMeshProUGUI>().text = "The Final Case";
+        gameModeName2.GetComponent<TextMeshProUGUI>().text = "The Final Case";
+        GameData.Instance.gameMode = GameMode.TheFinalCase;
+        gameMode.SetActive(false);
+        playerMode.SetActive(true);
+    }
+
+    public void OnPlayerModeBackButtonClick()
+    {
+        playerMode.SetActive(false);
+        gameMode.SetActive(true);
+    }
+
+    public void OnPlayersBackButtonClick()
+    {
+        players.SetActive(false);
+        playerMode.SetActive(true);
+    }
+
+    public void OnOneDeviceButtonClick()
+    {
+        GameData.Instance.playerMode = PlayerMode.OneDevice;
+        playerMode.SetActive(false);
+        players.SetActive(true);
     }
 
     public void OnQuitButtonClick()

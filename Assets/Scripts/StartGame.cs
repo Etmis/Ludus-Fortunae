@@ -5,18 +5,30 @@ using UnityEngine.SceneManagement;
 
 public class StartGame : MonoBehaviour
 {
+    [SerializeField] Animator transition;
+
     public void OnStartGameButtonClick()
     {
-        if (GameData.Instance.players.Count >= 2)
+        if (GameData.Instance.gameMode.Equals(GameMode.StealOrNoSteal))
         {
-            if (GameData.Instance.gameMode.Equals(GameMode.StealOrNoSteal))
+            if (GameData.Instance.players.Count >= 2)
+                StartCoroutine(LoadLevel("StealOrNoSteal"));
+        }
+        else if (GameData.Instance.gameMode.Equals(GameMode.TheFinalCase))
+        {
+            if (GameData.Instance.players.Count >= 3)
             {
-                SceneManager.LoadScene(GameMode.StealOrNoSteal.ToString());
-                foreach (var player in GameData.Instance.players)
-                {
-                    Debug.Log($"{player.index}, {player.name}, {player.isAlive}, {player.score}\n{GameData.Instance.gameMode}, {GameData.Instance.playerMode}");
-                }
+                StartCoroutine(LoadLevel("TheFinalCase"));
             }
         }
+    }
+
+    IEnumerator LoadLevel(string level)
+    {
+        transition.SetTrigger("Start");
+
+        yield return new WaitForSeconds(1);
+
+        SceneManager.LoadScene(level);
     }
 }

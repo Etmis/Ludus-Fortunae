@@ -27,21 +27,20 @@ public class PlayerData
     public string name;
     public bool isAlive;
     public bool isSafe;
-    public int score;
 
-    public PlayerData(int index, string name, bool isAlive, bool isSafe, int score)
+    public PlayerData(int index, string name, bool isAlive, bool isSafe)
     {
         this.index = index;
         this.name = name;
         this.isAlive = isAlive;
         this.isSafe = isSafe;
-        this.score = score;
     }
 }
 
 public enum GameMode
 {
     StealOrNoSteal,
+    TheFinalCase,
 
 }
 

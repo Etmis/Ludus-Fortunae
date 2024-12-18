@@ -15,22 +15,24 @@ public class StealOrNoSteal : MonoBehaviour
     [SerializeField] GameObject endOfRoundModal, leaderboard, nextPlayerModal, warning, stealOrNoStealQuestionModal, summaryModal;
     [SerializeField] TextMeshProUGUI endOfRoundModalText, leaderboardText, playerNameText, warningText, briefcaseText;
     [SerializeField] TextMeshProUGUI firstPlayerName, secondPlayerName, firstPlayerSummary, secondPlayerSummary;
-    [SerializeField] Animator animator;
+    [SerializeField] Animator animator, transition;
+    [SerializeField] ParticleSystem eliminated, safe;
 
     private bool isConfirmTurnButtonClicked, isStealOrNoStealButtonClicked, isConfirmWarningButtonClicked, isSummaryConfirmButtonClicked, isEndOfRoundConfirmButtonClicked;
     private PlayerData lastPlayer;
     private PlayerData firstPlayer, secondPlayer;
-    private int index, round = 1;
+    private int index = 0;
+    private int round = 1;
     #endregion
 
     private async void Start()
     {
         // potom smazat:
-        //GameManager.Instance = new GameManager();
-        //GameManager.Instance.players.Add(new PlayerData(0, "name1", true, false, 0));
-        //GameManager.Instance.players.Add(new PlayerData(1, "name2", true, false, 0));
-        //GameManager.Instance.players.Add(new PlayerData(2, "name3", true, false, 0));
-        //GameManager.Instance.players.Add(new PlayerData(3, "name4", true, false, 0));
+        //GameData.Instance = new GameData();
+        //GameData.Instance.players.Add(new PlayerData(0, "name1", true, false));
+        //GameData.Instance.players.Add(new PlayerData(1, "name2", true, false));
+        //GameData.Instance.players.Add(new PlayerData(2, "name3", true, false));
+        //GameData.Instance.players.Add(new PlayerData(3, "name4", true, false));
 
         firstPlayer = GameData.Instance.players[index];
         index++;
@@ -49,7 +51,7 @@ public class StealOrNoSteal : MonoBehaviour
                     break;
                 }
                 await ShowNextPlayers();
-                GenerateStealOrNoSteal();
+                GenerateBriefcases();
                 await ShowBriefcase();
                 if (briefcaseText.text.Equals("ELIMINATED"))
                 {
@@ -103,7 +105,7 @@ public class StealOrNoSteal : MonoBehaviour
 
             await ShowNextPlayers();
             await ShowWarning();
-            GenerateStealOrNoSteal();
+            GenerateBriefcases();
             await ShowBriefcase();
             await StealOrNoStealQuestion();
             await Summary();
@@ -120,7 +122,7 @@ public class StealOrNoSteal : MonoBehaviour
     public void OnLeaderboardConfirmButtonClick()
     {
         GameData.Instance.players.Clear();
-        SceneManager.LoadScene("MainMenu");
+        StartCoroutine(LoadLevel());
     }
 
     private async Task ShowEndOfRoundModal()
@@ -178,7 +180,6 @@ public class StealOrNoSteal : MonoBehaviour
             await Task.Yield();
         }
         warning.SetActive(false);
-        isConfirmWarningButtonClicked = true;
     }
 
     public void OnConfirmWarningButtonClick()
@@ -186,7 +187,7 @@ public class StealOrNoSteal : MonoBehaviour
         isConfirmWarningButtonClicked = true;
     }
 
-    private void GenerateStealOrNoSteal()
+    private void GenerateBriefcases()
     {
         System.Random random = new System.Random();
         if (random.Next(0, 2) == 1)
@@ -201,21 +202,24 @@ public class StealOrNoSteal : MonoBehaviour
 
     private async Task ShowBriefcase()
     {
-        var animationCompletion = new TaskCompletionSource<bool>();
-
         animator.SetTrigger("OpenBriefcase Trigger");
 
-        await Task.Delay(8000);
+        await Task.Delay(3500);
+
+        if (briefcaseText.text.Equals("ELIMINATED"))
+        {
+            eliminated.Play();
+        }
+        else if (briefcaseText.text.Equals("SAFE"))
+        {
+            safe.Play();
+        }
+
+        await Task.Delay(1500);
 
         animator.SetTrigger("CloseBriefcase Trigger");
 
-        await Task.Delay(4000);
-
-        Debug.Log("Animace skonèila!");
-
-        animationCompletion.SetResult(true);
-
-        await animationCompletion.Task;
+        await Task.Delay(3500);
     }
 
     private async Task StealOrNoStealQuestion()
@@ -364,5 +368,14 @@ public class StealOrNoSteal : MonoBehaviour
     public void OnSummaryConfirmButtonClick()
     {
         isSummaryConfirmButtonClicked = true;
+    }
+
+    IEnumerator LoadLevel()
+    {
+        transition.SetTrigger("Start");
+
+        yield return new WaitForSeconds(1);
+
+        SceneManager.LoadScene("MainMenu");
     }
 }
