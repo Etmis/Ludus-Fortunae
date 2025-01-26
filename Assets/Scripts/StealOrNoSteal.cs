@@ -28,13 +28,6 @@ public class StealOrNoSteal : MonoBehaviour
 
     private async void Start()
     {
-        // potom smazat:
-        //GameData.Instance = new GameData();
-        //GameData.Instance.players.Add(new PlayerData(0, "name1", true, false));
-        //GameData.Instance.players.Add(new PlayerData(1, "name2", true, false));
-        //GameData.Instance.players.Add(new PlayerData(2, "name3", true, false));
-        //GameData.Instance.players.Add(new PlayerData(3, "name4", true, false));
-
         firstPlayer = GameData.Instance.players[index];
         index++;
         secondPlayer = GameData.Instance.players[index];
@@ -49,7 +42,6 @@ public class StealOrNoSteal : MonoBehaviour
                     leaderboard.SetActive(true);
                     leaderboardText.text = "Last player standing: " + lastPlayer.name;
                     safe.Play();
-                    Debug.Log("Last player standing: " + lastPlayer.name);
                     break;
                 }
                 await ShowNextPlayers();
@@ -100,10 +92,8 @@ public class StealOrNoSteal : MonoBehaviour
             {
                 leaderboard.SetActive(true);
                 leaderboardText.text = "Last player standing: " + lastPlayer.name;
-                Debug.Log("Last player standing: " + lastPlayer.name);
                 break;
             }
-            Debug.Log("Current Players: " + firstPlayer.name + " vs " + secondPlayer.name);
 
             await ShowNextPlayers();
             await ShowWarning();
@@ -116,8 +106,6 @@ public class StealOrNoSteal : MonoBehaviour
             {
                 lastPlayer = GameData.Instance.players.First(player => player.isAlive);
             }
-
-            Debug.Log("DONE");
         }
     }
 
@@ -229,10 +217,24 @@ public class StealOrNoSteal : MonoBehaviour
         isStealOrNoStealButtonClicked = false;
         stealOrNoStealQuestionModal.SetActive(true);
 
+        float timeout = 60f; // jak moc má hráè èasu na odpovìï (v sekundách)
+        float elapsedTime = 0f;
+
         while (!isStealOrNoStealButtonClicked)
         {
+            if (elapsedTime >= timeout)
+            {
+                briefcaseText.text = "ELIMINATED";
+                OnStealButtonClick();
+
+                Debug.Log($"Player {secondPlayer.name} did not respond in time and was automatically eliminated.");
+                break;
+            }
+
             await Task.Yield();
+            elapsedTime += Time.deltaTime;
         }
+
         stealOrNoStealQuestionModal.SetActive(false);
     }
 

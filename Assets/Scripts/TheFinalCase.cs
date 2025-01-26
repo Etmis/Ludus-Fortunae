@@ -210,15 +210,35 @@ public class TheFinalCase : MonoBehaviour
     private async Task AskPlayer(PlayerData player)
     {
         playerDropdown.ClearOptions();
-        playerDropdown.AddOptions(GameData.Instance.players.Where(p => p.isAlive && p != player).Select(p => p.name).ToList());
+        playerDropdown.AddOptions(GameData.Instance.players.Where(p => p.isAlive).Select(p => p.name).ToList());
 
         isConfirmVotingButtonClicked = false;
         votingModal.SetActive(true);
-        while (!isConfirmVotingButtonClicked)
+
+        float timeout = 10f; // jak moc má hráè èasu na odpovìï (v sekundách)
+        float elapsedTime = 0f;
+
+        while (!isConfirmVotingButtonClicked && elapsedTime < timeout)
         {
+            elapsedTime += Time.deltaTime;
             await Task.Yield();
         }
+
         votingModal.SetActive(false);
+
+        if (!isConfirmVotingButtonClicked)
+        {
+            Debug.Log(player.name + " did not vote in time. They are eliminated.");
+            player.isAlive = false;
+
+            if (playerBriefcaseMap[player] == "WINNER")
+            {
+                Debug.Log("The winner's briefcase was held by " + player.name + ". Restarting round.");
+                return;
+            }
+
+            return;
+        }
 
         string selectedPlayerName = playerDropdown.options[playerDropdown.value].text;
 
@@ -229,7 +249,6 @@ public class TheFinalCase : MonoBehaviour
 
         voteCounts[selectedPlayerName]++;
     }
-
 
     public void OnConfirmVotingButtonClick()
     {
