@@ -215,7 +215,7 @@ public class TheFinalCase : MonoBehaviour
         isConfirmVotingButtonClicked = false;
         votingModal.SetActive(true);
 
-        float timeout = 10f; // jak moc má hráè èasu na odpovìï (v sekundách)
+        float timeout = 60f; // jak moc má hráè èasu na odpovìï (v sekundách)
         float elapsedTime = 0f;
 
         while (!isConfirmVotingButtonClicked && elapsedTime < timeout)
