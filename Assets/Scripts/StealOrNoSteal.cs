@@ -1,13 +1,10 @@
-using System;
-using System.CodeDom.Compiler;
 using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 
 public class StealOrNoSteal : MonoBehaviour
@@ -18,6 +15,7 @@ public class StealOrNoSteal : MonoBehaviour
     [SerializeField] TextMeshProUGUI firstPlayerName, secondPlayerName, firstPlayerSummary, secondPlayerSummary;
     [SerializeField] Animator animator, transition;
     [SerializeField] ParticleSystem eliminated, safe;
+    [SerializeField] Image timerCircle;
 
     private bool isConfirmTurnButtonClicked, isStealOrNoStealButtonClicked, isConfirmWarningButtonClicked, isSummaryConfirmButtonClicked, isEndOfRoundConfirmButtonClicked;
     private PlayerData lastPlayer;
@@ -217,24 +215,26 @@ public class StealOrNoSteal : MonoBehaviour
         isStealOrNoStealButtonClicked = false;
         stealOrNoStealQuestionModal.SetActive(true);
 
-        float timeout = 60f; // jak moc má hráè èasu na odpovìï (v sekundách)
         float elapsedTime = 0f;
+        timerCircle.fillAmount = 1f;
 
         while (!isStealOrNoStealButtonClicked)
         {
-            if (elapsedTime >= timeout)
+            if (elapsedTime >= GameData.Instance.timeToAnswer)
             {
                 briefcaseText.text = "ELIMINATED";
                 OnStealButtonClick();
-
                 Debug.Log($"Player {secondPlayer.name} did not respond in time and was automatically eliminated.");
                 break;
             }
+
+            timerCircle.fillAmount = 1f - (elapsedTime / GameData.Instance.timeToAnswer);
 
             await Task.Yield();
             elapsedTime += Time.deltaTime;
         }
 
+        timerCircle.fillAmount = 0;
         stealOrNoStealQuestionModal.SetActive(false);
     }
 

@@ -19,11 +19,14 @@ public class MenuController : MonoBehaviour
 
     public Slider musicSlider;
     public Slider sfxSlider;
+    public Slider timeToAnswerSlider;
+
+    public TextMeshProUGUI timeToAnswerText;
     #endregion
 
     private void Start()
     {
-        LoadVolume();
+        LoadSettings();
         MusicManager.Instance.PlayMusic("MainMenu");
     }
 
@@ -105,18 +108,27 @@ public class MenuController : MonoBehaviour
         audioMixer.SetFloat("SFXVolume", volume);
     }
 
-    public void SaveVolume()
+    public void SaveSettings()
     {
         audioMixer.GetFloat("MusicVolume", out float musicVolume);
         PlayerPrefs.SetFloat("MusicVolume", musicVolume);
 
         audioMixer.GetFloat("SFXVolume", out float sfxVolume);
         PlayerPrefs.SetFloat("SFXVolume", sfxVolume);
+
+        PlayerPrefs.SetFloat("TimeToAnswer", GameData.Instance.timeToAnswer);
     }
 
-    public void LoadVolume()
+    public void LoadSettings()
     {
         musicSlider.value = PlayerPrefs.GetFloat("MusicVolume");
         sfxSlider.value = PlayerPrefs.GetFloat("SFXVolume");
+        timeToAnswerSlider.value = PlayerPrefs.GetFloat("TimeToAnswer");
+    }
+
+    public void UpdateTimeToAnswer(float timeToAnswer)
+    {
+        GameData.Instance.timeToAnswer = (byte)Mathf.Round(timeToAnswer);
+        timeToAnswerText.text = timeToAnswer + "s";
     }
 }

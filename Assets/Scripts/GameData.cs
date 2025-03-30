@@ -8,6 +8,7 @@ public class GameData : MonoBehaviour
 
     public GameMode gameMode;
     public PlayerMode playerMode;
+    public byte timeToAnswer;
     public List<PlayerData> players = new List<PlayerData>();
 
     private void Awake()

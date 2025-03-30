@@ -15,6 +15,7 @@ public class TheFinalCase : MonoBehaviour
     [SerializeField] TMP_Dropdown playerDropdown;
     [SerializeField] Animator animator, transition;
     [SerializeField] ParticleSystem loser, winner;
+    [SerializeField] Image timerCircle;
 
     private bool isConfirmTurnButtonClicked, isStealOrNoStealButtonClicked, isConfirmWarningButtonClicked, isSummaryConfirmButtonClicked, isEndOfRoundConfirmButtonClicked, isConfirmVotingButtonClicked;
     private PlayerData lastPlayer;
@@ -215,12 +216,14 @@ public class TheFinalCase : MonoBehaviour
         isConfirmVotingButtonClicked = false;
         votingModal.SetActive(true);
 
-        float timeout = 60f; // jak moc má hráè èasu na odpovìï (v sekundách)
         float elapsedTime = 0f;
+        timerCircle.fillAmount = 1f; // Na startu je koleèko plné
 
-        while (!isConfirmVotingButtonClicked && elapsedTime < timeout)
+        while (!isConfirmVotingButtonClicked && elapsedTime < GameData.Instance.timeToAnswer)
         {
             elapsedTime += Time.deltaTime;
+            timerCircle.fillAmount = 1f - (elapsedTime / GameData.Instance.timeToAnswer);
+
             await Task.Yield();
         }
 
@@ -236,7 +239,6 @@ public class TheFinalCase : MonoBehaviour
                 Debug.Log("The winner's briefcase was held by " + player.name + ". Restarting round.");
                 return;
             }
-
             return;
         }
 
