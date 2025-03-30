@@ -10,7 +10,8 @@ public class MenuController : MonoBehaviour
     public GameObject settings;
     public GameObject gameMode;
     public GameObject playerMode;
-    public GameObject players;
+    public GameObject oneDevicePlayers;
+    public GameObject multipleDevicesPlayers;
     public GameObject gameModeName1;
     public GameObject gameModeName2;
     public GameObject gameModeText;
@@ -77,9 +78,15 @@ public class MenuController : MonoBehaviour
         gameMode.SetActive(true);
     }
 
-    public void OnPlayersBackButtonClick()
+    public void OnOneDevicePlayersBackButtonClick()
     {
-        players.SetActive(false);
+        oneDevicePlayers.SetActive(false);
+        playerMode.SetActive(true);
+    }
+
+    public void OnMultipleDevicesPlayersBackButtonClick()
+    {
+        multipleDevicesPlayers.SetActive(false);
         playerMode.SetActive(true);
     }
 
@@ -87,7 +94,14 @@ public class MenuController : MonoBehaviour
     {
         GameData.Instance.playerMode = PlayerMode.OneDevice;
         playerMode.SetActive(false);
-        players.SetActive(true);
+        oneDevicePlayers.SetActive(true);
+    }
+
+    public void OnMultipleDevicesButtonClick()
+    {
+        GameData.Instance.playerMode = PlayerMode.MultipleDevices;
+        playerMode.SetActive(false);
+        multipleDevicesPlayers.SetActive(true);
     }
 
     public void OnQuitButtonClick()

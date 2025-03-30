@@ -47,5 +47,6 @@ public enum GameMode
 public enum PlayerMode
 {
     OneDevice,
+    MultipleDevices,
 
 }
