@@ -22,12 +22,24 @@ public class MenuController : MonoBehaviour
     public Slider timeToAnswerSlider;
 
     public TextMeshProUGUI timeToAnswerText;
+    
+    public Toggle showWarningToggle;
+    
+    public bool showWarning;
     #endregion
 
     private void Start()
     {
         LoadSettings();
+        showWarningToggle.isOn = GameData.Instance.showWarning;
+        showWarningToggle.onValueChanged.AddListener(UpdateShowWarning);
         MusicManager.Instance.PlayMusic("MainMenu");
+    }
+
+    public void UpdateShowWarning(bool value)
+    {
+        GameData.Instance.showWarning = value;
+        PlayerPrefs.SetInt("showWarning", value ? 1 : 0);
     }
 
     public void OnPlayButtonClick()
@@ -58,7 +70,7 @@ public class MenuController : MonoBehaviour
     {
         gameModeName1.GetComponent<TextMeshProUGUI>().text = "Steal Or No Steal";
         gameModeName2.GetComponent<TextMeshProUGUI>().text = "Steal Or No Steal";
-        gameModeText.GetComponent<TextMeshProUGUI>().text = "One player receives a briefcase. The briefcase contains either \"ELIMINATED\" or \"SAFE\", and only the player holding the briefcase can see its contents.\r\nThe second player must decide whether to steal the briefcase or leave it with the other player.\r\nThe player with the briefcase can bluff, persuade, or tell the truth to influence the other player's decision.\r\nThe second player chooses either \"Steal\" or \"No Steal\".\r\nIf the player \"steals\" the briefcase, they take on its contents. If the briefcase contains \"Elimination\", they are removed from the game. If it contains \"Survival\", they continue playing.\r\nIf the player \"leaves the briefcase\", the outcome depends on the briefcase�s contents, which remain with the original player.";
+        gameModeText.GetComponent<TextMeshProUGUI>().text = "One player receives a briefcase. The briefcase contains either \"ELIMINATED\" or \"SAFE\", and only the player holding the briefcase can see its contents.\r\nThe second player must decide whether to steal the briefcase or leave it with the other player.\r\nThe player with the briefcase can bluff, persuade, or tell the truth to influence the other player's decision.\r\nThe second player chooses either \"Steal\" or \"No Steal\".\r\nIf the player \"steals\" the briefcase, they take on its contents. If the briefcase contains \"Elimination\", they are removed from the game. If it contains \"Survival\", they continue playing.\r\nIf the player \"leaves the briefcase\", the outcome depends on the briefcase�s contents, which remain with the original player.";
         GameData.Instance.gameMode = GameMode.StealOrNoSteal;
         gameMode.SetActive(false);
         playerMode.SetActive(true);
@@ -117,6 +129,10 @@ public class MenuController : MonoBehaviour
         PlayerPrefs.SetFloat("SFXVolume", sfxVolume);
 
         PlayerPrefs.SetFloat("TimeToAnswer", GameData.Instance.timeToAnswer);
+
+        // Ukládáme hodnotu přímo z GameData.Instance.showWarning
+        PlayerPrefs.SetInt("showWarning", GameData.Instance.showWarning ? 1 : 0);
+        PlayerPrefs.Save();
     }
 
     public void LoadSettings()
@@ -124,6 +140,10 @@ public class MenuController : MonoBehaviour
         musicSlider.value = PlayerPrefs.GetFloat("MusicVolume");
         sfxSlider.value = PlayerPrefs.GetFloat("SFXVolume");
         timeToAnswerSlider.value = PlayerPrefs.GetFloat("TimeToAnswer");
+
+        // Načítáme hodnotu a nastavujeme ji do GameData.Instance.showWarning i showWarningToggle
+        GameData.Instance.showWarning = PlayerPrefs.GetInt("showWarning") == 1;
+        showWarningToggle.isOn = GameData.Instance.showWarning;
     }
 
     public void UpdateTimeToAnswer(float timeToAnswer)

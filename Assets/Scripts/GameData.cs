@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -9,6 +10,7 @@ public class GameData : MonoBehaviour
     public GameMode gameMode;
     public PlayerMode playerMode;
     public byte timeToAnswer;
+    public bool showWarning;
     public List<PlayerData> players = new List<PlayerData>();
 
     private void Awake()
@@ -28,6 +30,7 @@ public class PlayerData
     public string name;
     public bool isAlive;
     public bool isSafe;
+    public int score;
 
     public PlayerData(int index, string name, bool isAlive, bool isSafe)
     {
@@ -35,6 +38,17 @@ public class PlayerData
         this.name = name;
         this.isAlive = isAlive;
         this.isSafe = isSafe;
+        this.score = 0;
+    }
+    
+    public void AddScore(int points)
+    {
+        score += points;
+    }
+
+    public void SubtractScore(int points)
+    {
+        score = Mathf.Max(0, score - points);
     }
 }
 

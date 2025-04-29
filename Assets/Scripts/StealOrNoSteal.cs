@@ -10,12 +10,13 @@ using UnityEngine.UI;
 public class StealOrNoSteal : MonoBehaviour
 {
     #region Variables
-    [SerializeField] GameObject endOfRoundModal, leaderboard, nextPlayerModal, warning, stealOrNoStealQuestionModal, summaryModal;
-    [SerializeField] TextMeshProUGUI endOfRoundModalText, leaderboardText, playerNameText, warningText, briefcaseText;
-    [SerializeField] TextMeshProUGUI firstPlayerName, secondPlayerName, firstPlayerSummary, secondPlayerSummary;
-    [SerializeField] Animator animator, transition;
-    [SerializeField] ParticleSystem eliminated, safe;
-    [SerializeField] Image timerCircle;
+    [SerializeField] private GameObject endOfRoundModal, leaderboard, nextPlayerModal, warning, stealOrNoStealQuestionModal, summaryModal;
+    [SerializeField] private TextMeshProUGUI endOfRoundModalText, leaderboardText, playerNameText, warningText, briefcaseText;
+    [SerializeField] private TextMeshProUGUI firstPlayerName, secondPlayerName, firstPlayerSummary, secondPlayerSummary;
+    [SerializeField] private Animator animator, transition;
+    [SerializeField] private ParticleSystem eliminated, safe, openEffect;
+    [SerializeField] private Image timerCircle;
+    [SerializeField] private TextMeshProUGUI firstPlayerScoreText, secondPlayerScoreText;
 
     private bool isConfirmTurnButtonClicked, isStealOrNoStealButtonClicked, isConfirmWarningButtonClicked, isSummaryConfirmButtonClicked, isEndOfRoundConfirmButtonClicked;
     private PlayerData lastPlayer;
@@ -25,87 +26,94 @@ public class StealOrNoSteal : MonoBehaviour
     #endregion
 
     private async void Start()
+{
+    firstPlayer = GameData.Instance.players[index];
+    index++;
+    secondPlayer = GameData.Instance.players[index];
+    index++;
+
+    while (true)
     {
-        firstPlayer = GameData.Instance.players[index];
-        index++;
-        secondPlayer = GameData.Instance.players[index];
-        index++;
-
-        while (true)
+        if (lastPlayer != null)
         {
-            if (lastPlayer != null)
-            {
-                if (GameData.Instance.players.Count(player => player.isAlive).Equals(1))
-                {
-                    leaderboard.SetActive(true);
-                    leaderboardText.text = "Last player standing: " + lastPlayer.name;
-                    safe.Play();
-                    break;
-                }
-                await ShowNextPlayers();
-                GenerateBriefcases();
-                await ShowBriefcase();
-                if (briefcaseText.text.Equals("ELIMINATED"))
-                {
-                    lastPlayer.isAlive = false;
-                }
-                else if (briefcaseText.text.Equals("SAFE"))
-                {
-                    lastPlayer.isSafe = true;
-                }
-                await Summary();
-                await ShowEndOfRoundModal();
-                foreach (var player in GameData.Instance.players)
-                {
-                    player.isSafe = false;
-                }
-                lastPlayer = null;
-                firstPlayer = null;
-                secondPlayer = null;
-                index = 0;
-                round++;
-                while (index < GameData.Instance.players.Count)
-                {
-                    if (GameData.Instance.players[index].isAlive)
-                    {
-                        firstPlayer = GameData.Instance.players[index];
-                        index++;
-                        break;
-                    }
-                    index++;
-                }
-
-                while (index < GameData.Instance.players.Count)
-                {
-                    if (GameData.Instance.players[index].isAlive)
-                    {
-                        secondPlayer = GameData.Instance.players[index];
-                        index++;
-                        break;
-                    }
-                    index++;
-                }
-            }
             if (GameData.Instance.players.Count(player => player.isAlive).Equals(1))
             {
                 leaderboard.SetActive(true);
                 leaderboardText.text = "Last player standing: " + lastPlayer.name;
+                safe.Play();
                 break;
             }
 
             await ShowNextPlayers();
-            await ShowWarning();
             GenerateBriefcases();
             await ShowBriefcase();
-            await StealOrNoStealQuestion();
-            await Summary();
-
-            if (GameData.Instance.players.Count(player => player.isAlive).Equals(1))
+            if (briefcaseText.text.Equals("ELIMINATED"))
             {
-                lastPlayer = GameData.Instance.players.First(player => player.isAlive);
+                lastPlayer.isAlive = false;
+            }
+            else if (briefcaseText.text.Equals("SAFE"))
+            {
+                lastPlayer.isSafe = true;
+            }
+            await Summary();
+            await ShowEndOfRoundModal();
+            
+            await CrossfadeTransition();
+            
+            foreach (var player in GameData.Instance.players)
+            {
+                player.isSafe = false;
+            }
+            lastPlayer = null;
+            firstPlayer = null;
+            secondPlayer = null;
+            index = 0;
+            round++;
+            while (index < GameData.Instance.players.Count)
+            {
+                if (GameData.Instance.players[index].isAlive)
+                {
+                    firstPlayer = GameData.Instance.players[index];
+                    index++;
+                    break;
+                }
+                index++;
+            }
+
+            while (index < GameData.Instance.players.Count)
+            {
+                if (GameData.Instance.players[index].isAlive)
+                {
+                    secondPlayer = GameData.Instance.players[index];
+                    index++;
+                    break;
+                }
+                index++;
             }
         }
+
+        if (GameData.Instance.players.Count(player => player.isAlive).Equals(1))
+        {
+            lastPlayer = GameData.Instance.players.Find(player => player.isAlive);
+            leaderboard.SetActive(true);
+            leaderboardText.text = "Last player standing: " + lastPlayer.name;
+            break;
+        }
+
+        await ShowNextPlayers();
+        await ShowWarning();
+        GenerateBriefcases();
+        await ShowBriefcase();
+        await StealOrNoStealQuestion();
+        await Summary();
+
+        if (GameData.Instance.players.Count(player => player.isAlive).Equals(1))
+        {
+            lastPlayer = GameData.Instance.players.First(player => player.isAlive);
+        }
     }
+}
+
 
     public void OnLeaderboardConfirmButtonClick()
     {
@@ -160,6 +168,11 @@ public class StealOrNoSteal : MonoBehaviour
 
     private async Task ShowWarning()
     {
+        if (!GameData.Instance.showWarning)
+        {
+            return;
+        }
+
         isConfirmWarningButtonClicked = false;
         warningText.text = "Only " + firstPlayer.name + " can look at the screen now!";
         warning.SetActive(true);
@@ -175,9 +188,10 @@ public class StealOrNoSteal : MonoBehaviour
         isConfirmWarningButtonClicked = true;
     }
 
+    private static readonly System.Random random = new System.Random();
+
     private void GenerateBriefcases()
     {
-        System.Random random = new System.Random();
         if (random.Next(0, 2) == 1)
         {
             briefcaseText.text = "ELIMINATED";
@@ -191,8 +205,12 @@ public class StealOrNoSteal : MonoBehaviour
     private async Task ShowBriefcase()
     {
         animator.SetTrigger("OpenBriefcase Trigger");
+        
+        openEffect.Play();
 
         await Task.Delay(3500);
+        
+        openEffect.Stop();
 
         if (briefcaseText.text.Equals("ELIMINATED"))
         {
@@ -265,121 +283,141 @@ public class StealOrNoSteal : MonoBehaviour
     }
 
     private async Task Summary()
+{
+    isSummaryConfirmButtonClicked = false;
+
+    if (lastPlayer != null)
     {
-        isSummaryConfirmButtonClicked = false;
+        firstPlayerName.text = lastPlayer.name;
+        secondPlayerName.text = "";
+        secondPlayerSummary.text = "";
 
-        if (lastPlayer != null)
+        if (!lastPlayer.isAlive)
         {
-            firstPlayerName.text = lastPlayer.name;
-            secondPlayerName.text = "";
-            secondPlayerSummary.text = "";
-
-            if (!lastPlayer.isAlive)
-            {
-                firstPlayerSummary.text = "ELIMINATED";
-            }
-            else if (lastPlayer.isAlive && lastPlayer.isSafe)
-            {
-                firstPlayerSummary.text = "SAFE";
-            }
+            firstPlayerSummary.text = "ELIMINATED";
         }
-        else
+        else if (lastPlayer.isAlive && lastPlayer.isSafe)
         {
-            firstPlayerName.text = firstPlayer.name;
-            secondPlayerName.text = secondPlayer.name;
-
-            Debug.Log(firstPlayer.isAlive + ", " + firstPlayer.isSafe);
-            Debug.Log(secondPlayer.isAlive + ", " + secondPlayer.isSafe);
-
-            if (!secondPlayer.isAlive)
-            {
-                secondPlayerSummary.text = "ELIMINATED";
-            }
-            else if (secondPlayer.isAlive && secondPlayer.isSafe)
-            {
-                secondPlayerSummary.text = "SAFE";
-            }
-            else if (secondPlayer.isAlive && !secondPlayer.isSafe)
-            {
-                secondPlayerSummary.text = "ANOTHER ROUND";
-                if (index >= GameData.Instance.players.Count || firstPlayer.Equals(null))
-                {
-                    lastPlayer = secondPlayer;
-                }
-            }
-
-            if (!firstPlayer.isAlive)
-            {
-                firstPlayerSummary.text = "ELIMINATED";
-                firstPlayer = secondPlayer;
-                while (index < GameData.Instance.players.Count)
-                {
-                    if (GameData.Instance.players[index].isAlive)
-                    {
-                        secondPlayer = GameData.Instance.players[index];
-                        index++;
-                        break;
-                    }
-                    index++;
-                }
-            }
-            else if (firstPlayer.isAlive && firstPlayer.isSafe)
-            {
-                firstPlayerSummary.text = "SAFE";
-                firstPlayer = secondPlayer;
-                while (index < GameData.Instance.players.Count)
-                {
-                    if (GameData.Instance.players[index].isAlive)
-                    {
-                        secondPlayer = GameData.Instance.players[index];
-                        index++;
-                        break;
-                    }
-                    index++;
-                }
-            }
-            else if (firstPlayer.isAlive && !firstPlayer.isSafe)
-            {
-                firstPlayerSummary.text = "ANOTHER ROUND";
-                if (index >= GameData.Instance.players.Count || secondPlayer.Equals(null))
-                {
-                    lastPlayer = firstPlayer;
-                }
-                else
-                {
-                    while (index < GameData.Instance.players.Count)
-                    {
-                        if (GameData.Instance.players[index].isAlive)
-                        {
-                            secondPlayer = GameData.Instance.players[index];
-                            index++;
-                            break;
-                        }
-                        index++;
-                    }
-                }
-            }
+            firstPlayerSummary.text = "SAFE";
+            lastPlayer.AddScore(10);
         }
-
-        summaryModal.SetActive(true);
-        while (!isSummaryConfirmButtonClicked)
-        {
-            await Task.Yield();
-        }
-        summaryModal.SetActive(false);
+        
+        firstPlayerScoreText.text = $"Score: {lastPlayer.score}";
+        secondPlayerScoreText.text = "";
     }
+    else
+    {
+        PlayerData first = firstPlayer;
+        PlayerData second = secondPlayer;
+
+        firstPlayerName.text = first.name;
+        secondPlayerName.text = second.name;
+
+        Debug.Log(first.isAlive + ", " + first.isSafe);
+        Debug.Log(second.isAlive + ", " + second.isSafe);
+
+        if (!second.isAlive)
+        {
+            secondPlayerSummary.text = "ELIMINATED";
+        }
+        else if (second.isAlive && second.isSafe)
+        {
+            secondPlayerSummary.text = "SAFE";
+            second.AddScore(10);
+        }
+        else if (second.isAlive && !second.isSafe)
+        {
+            secondPlayerSummary.text = "ANOTHER ROUND";
+            if (index >= GameData.Instance.players.Count || first == null)
+            {
+                lastPlayer = second;
+            }
+        }
+
+        if (!first.isAlive)
+        {
+            firstPlayerSummary.text = "ELIMINATED";
+            firstPlayer = second;
+            while (index < GameData.Instance.players.Count)
+            {
+                if (GameData.Instance.players[index].isAlive)
+                {
+                    secondPlayer = GameData.Instance.players[index];
+                    index++;
+                    break;
+                }
+                index++;
+            }
+        }
+        else if (first.isAlive && first.isSafe)
+        {
+            firstPlayerSummary.text = "SAFE";
+            first.AddScore(10);
+            firstPlayer = second;
+            while (index < GameData.Instance.players.Count)
+            {
+                if (GameData.Instance.players[index].isAlive)
+                {
+                    secondPlayer = GameData.Instance.players[index];
+                    index++;
+                    break;
+                }
+                index++;
+            }
+        }
+        else if (first.isAlive && !first.isSafe)
+        {
+            firstPlayerSummary.text = "ANOTHER ROUND";
+            if (index >= GameData.Instance.players.Count || second == null)
+            {
+                lastPlayer = first;
+            }
+            else
+            {
+                while (index < GameData.Instance.players.Count)
+                {
+                    if (GameData.Instance.players[index].isAlive)
+                    {
+                        secondPlayer = GameData.Instance.players[index];
+                        index++;
+                        break;
+                    }
+                    index++;
+                }
+            }
+        }
+
+        firstPlayerScoreText.text = $"Score: {first.score}";
+        secondPlayerScoreText.text = $"Score: {second.score}";
+    }
+
+    summaryModal.SetActive(true);
+    while (!isSummaryConfirmButtonClicked)
+    {
+        await Task.Yield();
+    }
+    summaryModal.SetActive(false);
+}
+
 
     public void OnSummaryConfirmButtonClick()
     {
         isSummaryConfirmButtonClicked = true;
     }
 
-    IEnumerator LoadLevel()
+    private IEnumerator LoadLevel()
     {
         transition.SetTrigger("Start");
 
         yield return new WaitForSeconds(1);
 
         SceneManager.LoadScene("MainMenu");
+    }
+    
+    private async Task CrossfadeTransition()
+    {
+        transition.SetTrigger("Start");
+        await Task.Delay(1000);
+        transition.SetTrigger("End");
     }
 }
