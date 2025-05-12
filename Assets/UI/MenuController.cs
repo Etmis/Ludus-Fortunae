@@ -40,6 +40,7 @@ public class MenuController : MonoBehaviour
     {
         GameData.Instance.showWarning = value;
         PlayerPrefs.SetInt("showWarning", value ? 1 : 0);
+        Debug.Log(GameData.Instance.showWarning);
     }
 
     public void OnPlayButtonClick()
