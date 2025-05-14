@@ -1,49 +1,45 @@
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
-using TMPro;
 
 public class InventoryUI : MonoBehaviour
 {
+    public static InventoryUI Instance;
+
     [Header("References")]
-    [SerializeField] private Transform categoryButtonsParent;
     [SerializeField] private Transform skinGridParent;
-    [SerializeField] private Transform loadoutSlotsParent;
     [SerializeField] private GameObject skinButtonPrefab;
-    [SerializeField] private GameObject categoryButtonPrefab;
+    [SerializeField] private Transform loadoutSlotsParent;
     [SerializeField] private GameObject loadoutSlotPrefab;
-    [SerializeField] private Image selectedSkinImage;
-    [SerializeField] private Text selectedSkinName;
+
+    [Header("Loadout Slots")]
+    [SerializeField] private LoadoutSlot[] loadoutSlots;
 
     private string currentCategory;
-    private Skin selectedSkin;
+
+    private void Awake()
+    {
+        Instance = this;
+    }
 
     private void Start()
     {
-        InitializeCategories();
-        RefreshLoadout();
+        InitializeLoadoutSlots();
+        RefreshAllCategories();
     }
 
-    private void InitializeCategories()
+    public void RefreshAllCategories()
     {
-        // Získání unikátních kategorií
-        HashSet<string> categories = new HashSet<string>();
-        foreach (Skin skin in InventoryManager.Instance.allSkins)
+        if (InventoryManager.Instance.allSkins.Count == 0)
         {
-            categories.Add(skin.Category);
+            Debug.LogWarning("No skins available in InventoryManager");
+            return;
         }
 
-        // Vytvoøení tlaèítek pro kategorie
-        foreach (string category in categories)
+        string firstCategory = InventoryManager.Instance.allSkins[0].Category;
+        if (!string.IsNullOrEmpty(firstCategory))
         {
-            GameObject buttonObj = Instantiate(categoryButtonPrefab, categoryButtonsParent);
-            buttonObj.GetComponentInChildren<TextMeshProUGUI>().text = category;
-            buttonObj.GetComponent<Button>().onClick.AddListener(() => ShowCategory(category));
-        }
-
-        if (categories.Count > 0)
-        {
-            ShowCategory(new List<string>(categories)[0]);
+            ShowCategory(firstCategory);
         }
     }
 
@@ -52,48 +48,46 @@ public class InventoryUI : MonoBehaviour
         currentCategory = category;
         ClearSkinGrid();
 
-        List<Skin> skins = InventoryManager.Instance.GetSkinsInCategory(category);
-        Skin selected = InventoryManager.Instance.GetSelectedSkinForCategory(category);
-
-        foreach (Skin skin in skins)
+        foreach (Skin skin in InventoryManager.Instance.GetSkinsInCategory(category))
         {
-            GameObject skinButton = Instantiate(skinButtonPrefab, skinGridParent);
-            SkinButtonHandler handler = skinButton.GetComponent<SkinButtonHandler>();
-
-            handler.Initialize(skin, skin == selected, () => OnSkinSelected(skin));
+            CreateSkinButton(skin);
         }
     }
 
-    private void OnSkinSelected(Skin skin)
+    private void CreateSkinButton(Skin skin)
     {
-        selectedSkin = skin;
-        selectedSkinImage.sprite = skin.Icon;
-        selectedSkinName.text = skin.Name;
+        GameObject buttonObj = Instantiate(skinButtonPrefab, skinGridParent);
+        SkinButtonHandler handler = buttonObj.GetComponent<SkinButtonHandler>();
+        handler.Initialize(skin);
     }
 
-    public void ConfirmSelection()
+    public void RefreshCurrentCategory()
     {
-        if (selectedSkin != null)
+        ShowCategory(currentCategory);
+    }
+
+    private void InitializeLoadoutSlots()
+    {
+        foreach (LoadoutSlot slot in loadoutSlots)
         {
-            InventoryManager.Instance.SelectSkin(selectedSkin.Id);
-            ShowCategory(currentCategory); // Refresh grid
-            RefreshLoadout();
+            slot.UpdateSlot();
         }
     }
 
-    private void RefreshLoadout()
+    public void OnSkinSelected(Skin skin)
     {
-        foreach (Transform child in loadoutSlotsParent)
+        if (InventoryManager.Instance.SelectSkin(skin.Id))
         {
-            Destroy(child.gameObject);
-        }
-
-        var selectedSkins = InventoryManager.Instance.GetSelectedSkins();
-        foreach (var pair in selectedSkins)
-        {
-            GameObject slot = Instantiate(loadoutSlotPrefab, loadoutSlotsParent);
-            slot.GetComponentInChildren<Text>().text = pair.Key;
-            slot.GetComponent<Image>().sprite = pair.Value.Icon;
+            Debug.Log($"Updating slot for category: {skin.Category}");
+            LoadoutSlot slot = System.Array.Find(loadoutSlots, s => s.category == skin.Category);
+            if (slot != null)
+            {
+                slot.UpdateSlot();
+            }
+            else
+            {
+                Debug.LogError($"No slot found for category: {skin.Category}");
+            }
         }
     }
 

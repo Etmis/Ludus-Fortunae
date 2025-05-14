@@ -40,9 +40,15 @@ public class InventoryManager : MonoBehaviour
             Instance = this;
             DontDestroyOnLoad(gameObject);
         }
+    }
 
-        LoadUnlockedSkins();
-        LoadSelectedSkins();
+    private void Start()
+    {
+        // for developing purposes (remove later):
+        //SaveUnlockedSkins();
+
+        //LoadUnlockedSkins();
+        //LoadSelectedSkins();
     }
 
     public void UnlockSkin(string skinId)
@@ -59,23 +65,19 @@ public class InventoryManager : MonoBehaviour
         }
     }
 
-    public void SelectSkin(string skinId)
+    public bool SelectSkin(string skinId)
     {
         Skin skin = allSkins.Find(s => s.Id == skinId);
-        if (skin == null)
+        if (skin == null || !skin.IsUnlocked)
         {
-            Debug.LogError($"Skin with ID {skinId} not found!");
-            return;
+            Debug.Log($"Skin selection failed: {skinId}");
+            return false;
         }
 
-        if (!skin.IsUnlocked)
-        {
-            Debug.LogError($"Cannot select locked skin: {skinId}");
-            return;
-        }
-
+        Debug.Log($"Selected skin: {skin.Id} for category: {skin.Category}");
         selectedSkinsByCategory[skin.Category] = skin;
         SaveSelectedSkins();
+        return true;
     }
 
     public List<Skin> GetUnlockedSkins()

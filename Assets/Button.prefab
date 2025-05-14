@@ -99,7 +99,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0.39215687}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -246,6 +246,3 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b68c27b03bc9cd14dbf636c87539ce57, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  skinImage: {fileID: 0}
-  lockOverlay: {fileID: 0}
-  selectionHighlight: {fileID: 0}

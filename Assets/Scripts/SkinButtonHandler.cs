@@ -1,29 +1,55 @@
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
-public class SkinButtonHandler : MonoBehaviour
+public class SkinButtonHandler : MonoBehaviour, IPointerClickHandler
 {
-    [SerializeField] private Image skinImage;
-    [SerializeField] private GameObject lockOverlay;
-    [SerializeField] private GameObject selectionHighlight;
+    private Skin _skin;
+    private Button _button;
 
-    public void Initialize(Skin skin, bool isSelected, UnityEngine.Events.UnityAction onClick)
+    private void Awake()
     {
-        skinImage.sprite = skin.Icon;
-        lockOverlay.SetActive(!skin.IsUnlocked);
-        selectionHighlight.SetActive(isSelected);
-
-        GetComponent<Button>().onClick.RemoveAllListeners();
-        GetComponent<Button>().onClick.AddListener(() =>
+        _button = GetComponent<Button>();
+        if (_button == null)
         {
-            if (skin.IsUnlocked)
-            {
-                onClick?.Invoke();
-            }
-            else
-            {
-                Debug.Log("Skin is locked!");
-            }
-        });
+            Debug.LogError("Button component missing!");
+        }
+    }
+
+    public void Initialize(Skin skin)
+    {
+        _skin = skin;
+
+        Image img = GetComponent<Image>();
+        if (img != null)
+        {
+            img.sprite = _skin.Icon;
+        }
+        else
+        {
+            Debug.LogError("Image component missing!");
+        }
+
+        if (_button != null)
+        {
+            _button.interactable = _skin.IsUnlocked;
+        }
+    }
+
+    // Metoda pro UI.Button onClick event
+    public void OnButtonClick()
+    {
+        Debug.Log($"Button clicked: {_skin?.Id}");
+        if (_skin != null && _skin.IsUnlocked)
+        {
+            InventoryUI.Instance?.OnSkinSelected(_skin);
+        }
+    }
+
+    // Metoda pro IPointerClickHandler (fallback)
+    public void OnPointerClick(PointerEventData eventData)
+    {
+        Debug.Log("Pointer click detected");
+        OnButtonClick();
     }
 }
