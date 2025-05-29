@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.18028378, g: 0.22571412, b: 0.30692285, a: 1}
+  m_IndirectSpecularColor: {r: 0.18028334, g: 0.22571328, b: 0.3069217, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -7124,7 +7124,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1097779435}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.0075000026, z: 0}
+  m_LocalPosition: {x: 0, y: 0.0025, z: 0}
   m_LocalScale: {x: 0.010000001, y: 0.01, z: 0.01}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -7182,6 +7182,10 @@ MonoBehaviour:
   nextPlayerModal: {fileID: 1077539295}
   warning: {fileID: 299216476}
   votingModal: {fileID: 609761394}
+  briefcase: {fileID: 14684604}
+  skinEffectElectricity: {fileID: 1684475524}
+  skinBriefcaseRed: {fileID: 2100000, guid: e290c22a9146e2f4f9dca5cb6456ee91, type: 2}
+  skinBriefcaseBlue: {fileID: 2100000, guid: edeb08c99f96ebb46b8bad320dd68bb9, type: 2}
   endOfRoundModalText: {fileID: 1350185242}
   leaderboardText: {fileID: 1869514414}
   playerNameText: {fileID: 969161935}
@@ -7193,7 +7197,6 @@ MonoBehaviour:
   transition: {fileID: 1528025788}
   loser: {fileID: 1436225257}
   winner: {fileID: 933022783}
-  openEffect: {fileID: 1684475524}
   timerCircle: {fileID: 363675684}
 --- !u!1001 &1244033743
 PrefabInstance:

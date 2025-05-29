@@ -11,18 +11,19 @@ public class TheFinalCase : MonoBehaviour
 {
     #region Variables
 
-    [SerializeField] private GameObject summaryModal, endOfRoundModal, leaderboard, nextPlayerModal, warning, votingModal;
+    [SerializeField] private GameObject summaryModal, endOfRoundModal, leaderboard, nextPlayerModal, warning, votingModal, briefcase;
 
-    [SerializeField]
-    private TextMeshProUGUI endOfRoundModalText, leaderboardText, playerNameText, warningText, briefcaseText, summaryText;
+    [SerializeField] private ParticleSystem skinEffectElectricity;
+    [SerializeField] private Material skinBriefcaseRed, skinBriefcaseBlue;
+
+    [SerializeField] private TextMeshProUGUI endOfRoundModalText, leaderboardText, playerNameText, warningText, briefcaseText, summaryText;
 
     [SerializeField] private TMP_Dropdown playerDropdown;
     [SerializeField] private Animator animator, transition;
-    [SerializeField] private ParticleSystem loser, winner, openEffect;
+    [SerializeField] private ParticleSystem loser, winner;
     [SerializeField] private Image timerCircle;
 
     private bool isConfirmTurnButtonClicked,
-        isStealOrNoStealButtonClicked,
         isConfirmWarningButtonClicked,
         isSummaryConfirmButtonClicked,
         isEndOfRoundConfirmButtonClicked,
@@ -33,8 +34,8 @@ public class TheFinalCase : MonoBehaviour
     private List<string> briefcases;
     private Dictionary<string, int> voteCounts = new Dictionary<string, int>();
     private Dictionary<PlayerData, string> playerBriefcaseMap = new Dictionary<PlayerData, string>();
-    private int round = 1;
-    private int index = 0;
+    private int round = 1, index = 0;
+    private ParticleSystem openEffect;
 
     #endregion
 
@@ -46,6 +47,34 @@ public class TheFinalCase : MonoBehaviour
         //GameData.Instance.players.Add(new PlayerData(1, "name2", true, false));
         //GameData.Instance.players.Add(new PlayerData(2, "name3", true, false));
         //GameData.Instance.players.Add(new PlayerData(3, "name4", true, false));
+
+        Skin skinBriefcase = InventoryManager.Instance.GetSelectedSkinForCategory("briefcase");
+        Skin skinEffect = InventoryManager.Instance.GetSelectedSkinForCategory("effect");
+
+        Material selectedMaterial = null;
+
+        switch (skinBriefcase.Id)
+        {
+            case "0": selectedMaterial = null; break;
+            case "1": selectedMaterial = skinBriefcaseRed; break;
+            case "2": selectedMaterial = skinBriefcaseBlue; break;
+            default: selectedMaterial = null; break;
+        }
+
+        if (selectedMaterial != null)
+        {
+            foreach (Renderer renderer in briefcase.GetComponentsInChildren<Renderer>())
+            {
+                renderer.material = selectedMaterial;
+            }
+        }
+
+        switch (skinEffect.Id)
+        {
+            case "1000": openEffect = null; break;
+            case "1001": openEffect = skinEffectElectricity; break;
+            default: openEffect = null; break;
+        }
 
         while (true)
         {

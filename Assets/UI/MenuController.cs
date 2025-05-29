@@ -7,6 +7,7 @@ public class MenuController : MonoBehaviour
 {
     #region Variables
     public GameObject mainMenu;
+    public GameObject inventory;
     public GameObject settings;
     public GameObject gameMode;
     public GameObject playerMode;
@@ -52,6 +53,18 @@ public class MenuController : MonoBehaviour
     public void OnGameModeBackButtonClick()
     {
         gameMode.SetActive(false);
+        mainMenu.SetActive(true);
+    }
+
+    public void OnInventoryButtonClick()
+    {
+        mainMenu.SetActive(false);
+        inventory.SetActive(true);
+    }
+
+    public void OnInventoryBackButtonClick()
+    {
+        inventory.SetActive(false);
         mainMenu.SetActive(true);
     }
 
