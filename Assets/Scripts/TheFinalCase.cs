@@ -215,10 +215,12 @@ public class TheFinalCase : MonoBehaviour
 
         animator.SetTrigger("OpenBriefcase Trigger");
 
+        if (openEffect != null)
         openEffect.Play();
 
         await Task.Delay(3500);
 
+        if (openEffect != null) 
         openEffect.Stop();
 
         if (briefcaseText.text.Equals("LOSER"))
