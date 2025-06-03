@@ -1,11 +1,13 @@
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using UnityEngine.Advertisements;
 
 public class SkinButtonHandler : MonoBehaviour, IPointerClickHandler
 {
     private Skin _skin;
     private Button _button;
+    private Image _lockIcon; // Add a reference to a lock icon if you have one
 
     private void Awake()
     {
@@ -14,6 +16,9 @@ public class SkinButtonHandler : MonoBehaviour, IPointerClickHandler
         {
             Debug.LogError("Button component missing!");
         }
+        
+        // If you have a lock icon child object
+        _lockIcon = transform.Find("LockIcon")?.GetComponent<Image>();
     }
 
     public void Initialize(Skin skin)
@@ -32,21 +37,49 @@ public class SkinButtonHandler : MonoBehaviour, IPointerClickHandler
 
         if (_button != null)
         {
-            _button.interactable = _skin.IsUnlocked;
+            _button.interactable = true; // Always make it interactable
+        }
+
+        // Show/hide lock icon based on skin status
+        if (_lockIcon != null)
+        {
+            _lockIcon.gameObject.SetActive(!_skin.IsUnlocked);
         }
     }
 
-    // Metoda pro UI.Button onClick event
     public void OnButtonClick()
     {
         Debug.Log($"Button clicked: {_skin?.Id}");
-        if (_skin != null && _skin.IsUnlocked)
+        if (_skin == null) return;
+        
+        if (_skin.IsUnlocked)
         {
+            // Select the skin if it's already unlocked
             InventoryUI.Instance?.OnSkinSelected(_skin);
+        }
+        else
+        {
+            // Show ad to unlock the skin
+            ShowUnlockAd();
         }
     }
 
-    // Metoda pro IPointerClickHandler (fallback)
+    private void ShowUnlockAd()
+    {
+        // Get the RewardAd instance (you might need to adjust this based on your setup)
+        RewardAd rewardAd = FindObjectOfType<RewardAd>();
+        if (rewardAd != null)
+        {
+            // Set up the callback for when the ad completes
+            rewardAd.SetSkinToUnlock(_skin.Id);
+            rewardAd.ShowAd();
+        }
+        else
+        {
+            Debug.LogError("RewardAd component not found!");
+        }
+    }
+
     public void OnPointerClick(PointerEventData eventData)
     {
         Debug.Log("Pointer click detected");

@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.Advertisements;
 
@@ -13,6 +14,18 @@ public class InterstitialAd : MonoBehaviour, IUnityAdsLoadListener, IUnityAdsSho
         _adUnitId = (Application.platform == RuntimePlatform.IPhonePlayer)
         ? _iOSAdUnitId
         : _androidAdUnitId;
+    }
+
+    void Start()
+    {
+        StartCoroutine(WaitForLoad());
+        StopCoroutine(WaitForLoad());
+    }
+
+    private IEnumerator WaitForLoad()
+    {
+        yield return new WaitForSeconds(1);
+        ShowAd();
     }
 
     // Load content to the Ad Unit:

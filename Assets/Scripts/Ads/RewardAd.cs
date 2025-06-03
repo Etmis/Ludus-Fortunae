@@ -4,10 +4,11 @@ using UnityEngine.Advertisements;
 
 public class RewardAd : MonoBehaviour, IUnityAdsLoadListener, IUnityAdsShowListener
 {
-    [SerializeField] Button _showAdButton;
     [SerializeField] string _androidAdUnitId = "Rewarded_Android";
     [SerializeField] string _iOSAdUnitId = "Rewarded_iOS";
     string _adUnitId = null; // This will remain null for unsupported platforms
+
+    private string _skinIdToUnlock; // Store the skin ID to unlock after ad
 
     void Awake()
     {
@@ -17,9 +18,11 @@ public class RewardAd : MonoBehaviour, IUnityAdsLoadListener, IUnityAdsShowListe
 #elif UNITY_ANDROID
         _adUnitId = _androidAdUnitId;
 #endif
+    }
 
-        // Disable the button until the ad is ready to show:
-        _showAdButton.interactable = false;
+    public void SetSkinToUnlock(string skinId)
+    {
+        _skinIdToUnlock = skinId;
     }
 
     // Call this public method when you want to get an ad ready to show.
@@ -31,24 +34,11 @@ public class RewardAd : MonoBehaviour, IUnityAdsLoadListener, IUnityAdsShowListe
     }
 
     // If the ad successfully loads, add a listener to the button and enable it:
-    public void OnUnityAdsAdLoaded(string adUnitId)
-    {
-        Debug.Log("Ad Loaded: " + adUnitId);
-
-        if (adUnitId.Equals(_adUnitId))
-        {
-            // Configure the button to call the ShowAd() method when clicked:
-            _showAdButton.onClick.AddListener(ShowAd);
-            // Enable the button for users to click:
-            _showAdButton.interactable = true;
-        }
-    }
+    public void OnUnityAdsAdLoaded(string adUnitId) { }
 
     // Implement a method to execute when the user clicks the button:
     public void ShowAd()
     {
-        // Disable the button:
-        _showAdButton.interactable = false;
         // Then show the ad:
         Advertisement.Show(_adUnitId, this);
     }
@@ -59,7 +49,18 @@ public class RewardAd : MonoBehaviour, IUnityAdsLoadListener, IUnityAdsShowListe
         if (adUnitId.Equals(_adUnitId) && showCompletionState.Equals(UnityAdsShowCompletionState.COMPLETED))
         {
             Debug.Log("Unity Ads Rewarded Ad Completed");
-            // Grant a reward.
+
+            // Unlock the skin
+            if (!string.IsNullOrEmpty(_skinIdToUnlock))
+            {
+                InventoryManager.Instance.UnlockSkin(_skinIdToUnlock);
+
+                // Refresh the UI to show the unlocked skin
+                InventoryUI.Instance?.RefreshCurrentCategory();
+
+                // Clear the skin ID
+                _skinIdToUnlock = null;
+            }
         }
     }
 
@@ -78,10 +79,4 @@ public class RewardAd : MonoBehaviour, IUnityAdsLoadListener, IUnityAdsShowListe
 
     public void OnUnityAdsShowStart(string adUnitId) { }
     public void OnUnityAdsShowClick(string adUnitId) { }
-
-    void OnDestroy()
-    {
-        // Clean up the button listeners:
-        _showAdButton.onClick.RemoveAllListeners();
-    }
 }

@@ -44,11 +44,26 @@ public class InventoryManager : MonoBehaviour
 
     private void Start()
     {
-        // for developing purposes (remove later):
-        //SaveUnlockedSkins();
+        LoadUnlockedSkins();
+        LoadSelectedSkins();
 
-        //LoadUnlockedSkins();
-        //LoadSelectedSkins();
+
+        // for testing:
+        foreach (Skin skin in allSkins)
+        {
+            skin.IsUnlocked = false;
+        }
+        // --------------
+
+        if (GetSelectedSkinForCategory("briefcase") == null)
+        {
+            SelectSkin("0");
+        }
+
+        if (GetSelectedSkinForCategory("effect") == null)
+        {
+            SelectSkin("1000");
+        }
     }
 
     public void UnlockSkin(string skinId)

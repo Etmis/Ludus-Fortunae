@@ -10,7 +10,6 @@ public class AdsInitializer : MonoBehaviour, IUnityAdsInitializationListener
 
     void Awake()
     {
-        DontDestroyOnLoad(this);
         InitializeAds();
     }
 

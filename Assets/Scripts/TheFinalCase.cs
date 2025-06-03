@@ -53,12 +53,15 @@ public class TheFinalCase : MonoBehaviour
 
         Material selectedMaterial = null;
 
-        switch (skinBriefcase.Id)
+        if (skinBriefcase != null)
         {
-            case "0": selectedMaterial = null; break;
-            case "1": selectedMaterial = skinBriefcaseRed; break;
-            case "2": selectedMaterial = skinBriefcaseBlue; break;
-            default: selectedMaterial = null; break;
+            switch (skinBriefcase.Id)
+            {
+                case "0": selectedMaterial = null; break;
+                case "1": selectedMaterial = skinBriefcaseRed; break;
+                case "2": selectedMaterial = skinBriefcaseBlue; break;
+                default: selectedMaterial = null; break;
+            }
         }
 
         if (selectedMaterial != null)
@@ -69,11 +72,14 @@ public class TheFinalCase : MonoBehaviour
             }
         }
 
-        switch (skinEffect.Id)
+        if (skinEffect != null)
         {
-            case "1000": openEffect = null; break;
-            case "1001": openEffect = skinEffectElectricity; break;
-            default: openEffect = null; break;
+            switch (skinEffect.Id)
+            {
+                case "1000": openEffect = null; break;
+                case "1001": openEffect = skinEffectElectricity; break;
+                default: openEffect = null; break;
+            }
         }
 
         while (true)
@@ -125,12 +131,12 @@ public class TheFinalCase : MonoBehaviour
             }
 
             await Voting();
-            if (lastEliminatedPlayer != null) 
+            if (lastEliminatedPlayer != null)
                 await Summary();
             await ShowEndOfRoundModal();
-            
+
             await CrossfadeTransition();
-            
+
             round++;
         }
     }
@@ -216,12 +222,12 @@ public class TheFinalCase : MonoBehaviour
         animator.SetTrigger("OpenBriefcase Trigger");
 
         if (openEffect != null)
-        openEffect.Play();
+            openEffect.Play();
 
         await Task.Delay(3500);
 
-        if (openEffect != null) 
-        openEffect.Stop();
+        if (openEffect != null)
+            openEffect.Stop();
 
         if (briefcaseText.text.Equals("LOSER"))
         {
@@ -380,10 +386,10 @@ public class TheFinalCase : MonoBehaviour
         {
             await Task.Yield();
         }
-        
+
         summaryModal.SetActive(false);
     }
-    
+
     public void OnConfirmSummaryButtonClick()
     {
         isSummaryConfirmButtonClicked = true;
@@ -393,11 +399,15 @@ public class TheFinalCase : MonoBehaviour
     {
         isEndOfRoundConfirmButtonClicked = true;
     }
-    
+
     private async Task CrossfadeTransition()
     {
         transition.SetTrigger("Start");
         await Task.Delay(1000);
         transition.SetTrigger("End");
+    }
+
+    private void sds()
+    {
     }
 }

@@ -10,13 +10,16 @@ using UnityEngine.UI;
 public class StealOrNoSteal : MonoBehaviour
 {
     #region Variables
-    [SerializeField] private GameObject endOfRoundModal, leaderboard, nextPlayerModal, warning, stealOrNoStealQuestionModal, summaryModal;
+    [SerializeField] private GameObject endOfRoundModal, leaderboard, nextPlayerModal, warning, stealOrNoStealQuestionModal, summaryModal, briefcase;
     [SerializeField] private TextMeshProUGUI endOfRoundModalText, leaderboardText, playerNameText, warningText, briefcaseText;
     [SerializeField] private TextMeshProUGUI firstPlayerName, secondPlayerName, firstPlayerSummary, secondPlayerSummary;
     [SerializeField] private Animator animator, transition;
     [SerializeField] private ParticleSystem eliminated, safe, openEffect;
     [SerializeField] private Image timerCircle;
     [SerializeField] private TextMeshProUGUI firstPlayerScoreText, secondPlayerScoreText;
+
+    [SerializeField] private ParticleSystem skinEffectElectricity;
+    [SerializeField] private Material skinBriefcaseRed, skinBriefcaseBlue;
 
     private bool isConfirmTurnButtonClicked, isStealOrNoStealButtonClicked, isConfirmWarningButtonClicked, isSummaryConfirmButtonClicked, isEndOfRoundConfirmButtonClicked;
     private PlayerData lastPlayer;
@@ -27,6 +30,40 @@ public class StealOrNoSteal : MonoBehaviour
 
     private async void Start()
     {
+        Skin skinBriefcase = InventoryManager.Instance.GetSelectedSkinForCategory("briefcase");
+        Skin skinEffect = InventoryManager.Instance.GetSelectedSkinForCategory("effect");
+
+        Material selectedMaterial = null;
+
+        if (skinBriefcase != null)
+        {
+            switch (skinBriefcase.Id)
+            {
+                case "0": selectedMaterial = null; break;
+                case "1": selectedMaterial = skinBriefcaseRed; break;
+                case "2": selectedMaterial = skinBriefcaseBlue; break;
+                default: selectedMaterial = null; break;
+            }
+        }
+
+        if (selectedMaterial != null)
+        {
+            foreach (Renderer renderer in briefcase.GetComponentsInChildren<Renderer>())
+            {
+                renderer.material = selectedMaterial;
+            }
+        }
+
+        if (skinEffect != null)
+        {
+            switch (skinEffect.Id)
+            {
+                case "1000": openEffect = null; break;
+                case "1001": openEffect = skinEffectElectricity; break;
+                default: openEffect = null; break;
+            }
+        }
+
         firstPlayer = GameData.Instance.players[index];
         index++;
         secondPlayer = GameData.Instance.players[index];
@@ -206,11 +243,13 @@ public class StealOrNoSteal : MonoBehaviour
     {
         animator.SetTrigger("OpenBriefcase Trigger");
 
-        openEffect.Play();
+        if (openEffect != null)
+            openEffect.Play();
 
         await Task.Delay(3500);
 
-        openEffect.Stop();
+        if (openEffect != null)
+            openEffect.Stop();
 
         if (briefcaseText.text.Equals("ELIMINATED"))
         {

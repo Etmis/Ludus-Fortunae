@@ -7557,6 +7557,7 @@ MonoBehaviour:
   warning: {fileID: 918034699}
   stealOrNoStealQuestionModal: {fileID: 811189476}
   summaryModal: {fileID: 1156567746}
+  briefcase: {fileID: 0}
   endOfRoundModalText: {fileID: 1133747576}
   leaderboardText: {fileID: 769850651}
   playerNameText: {fileID: 373493749}
@@ -7574,6 +7575,9 @@ MonoBehaviour:
   timerCircle: {fileID: 1347104173}
   firstPlayerScoreText: {fileID: 2054344725}
   secondPlayerScoreText: {fileID: 242878156}
+  skinEffectElectricity: {fileID: 576609895}
+  skinBriefcaseRed: {fileID: 2100000, guid: e290c22a9146e2f4f9dca5cb6456ee91, type: 2}
+  skinBriefcaseBlue: {fileID: 2100000, guid: edeb08c99f96ebb46b8bad320dd68bb9, type: 2}
 --- !u!1001 &1264973680
 PrefabInstance:
   m_ObjectHideFlags: 0
