@@ -10,7 +10,7 @@ using UnityEngine.UI;
 public class StealOrNoSteal : MonoBehaviour
 {
     #region Variables
-    [SerializeField] private GameObject endOfRoundModal, leaderboard, nextPlayerModal, warning, stealOrNoStealQuestionModal, summaryModal, briefcase;
+    [SerializeField] private GameObject endOfRoundModal, leaderboard, nextPlayerModal, warning, stealOrNoStealQuestionModal, summaryModal, briefcase1, briefcase2;
     [SerializeField] private TextMeshProUGUI endOfRoundModalText, leaderboardText, playerNameText, warningText, briefcaseText;
     [SerializeField] private TextMeshProUGUI firstPlayerName, secondPlayerName, firstPlayerSummary, secondPlayerSummary;
     [SerializeField] private Animator animator, transition;
@@ -18,7 +18,7 @@ public class StealOrNoSteal : MonoBehaviour
     [SerializeField] private Image timerCircle;
     [SerializeField] private TextMeshProUGUI firstPlayerScoreText, secondPlayerScoreText;
 
-    [SerializeField] private ParticleSystem skinEffectElectricity;
+    [SerializeField] private ParticleSystem skinEffectElectricity, skinEffectShield;
     [SerializeField] private Material skinBriefcaseRed, skinBriefcaseBlue;
 
     private bool isConfirmTurnButtonClicked, isStealOrNoStealButtonClicked, isConfirmWarningButtonClicked, isSummaryConfirmButtonClicked, isEndOfRoundConfirmButtonClicked;
@@ -48,7 +48,12 @@ public class StealOrNoSteal : MonoBehaviour
 
         if (selectedMaterial != null)
         {
-            foreach (Renderer renderer in briefcase.GetComponentsInChildren<Renderer>())
+            foreach (Renderer renderer in briefcase1.GetComponents<Renderer>())
+            {
+                renderer.material = selectedMaterial;
+            }
+
+            foreach (Renderer renderer in briefcase2.GetComponents<Renderer>())
             {
                 renderer.material = selectedMaterial;
             }
@@ -60,6 +65,7 @@ public class StealOrNoSteal : MonoBehaviour
             {
                 case "1000": openEffect = null; break;
                 case "1001": openEffect = skinEffectElectricity; break;
+                case "1002": openEffect = skinEffectShield; break;
                 default: openEffect = null; break;
             }
         }

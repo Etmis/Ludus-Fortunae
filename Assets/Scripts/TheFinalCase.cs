@@ -11,9 +11,9 @@ public class TheFinalCase : MonoBehaviour
 {
     #region Variables
 
-    [SerializeField] private GameObject summaryModal, endOfRoundModal, leaderboard, nextPlayerModal, warning, votingModal, briefcase;
+    [SerializeField] private GameObject summaryModal, endOfRoundModal, leaderboard, nextPlayerModal, warning, votingModal, briefcase1, briefcase2;
 
-    [SerializeField] private ParticleSystem skinEffectElectricity;
+    [SerializeField] private ParticleSystem skinEffectElectricity, skinEffectShield;
     [SerializeField] private Material skinBriefcaseRed, skinBriefcaseBlue;
 
     [SerializeField] private TextMeshProUGUI endOfRoundModalText, leaderboardText, playerNameText, warningText, briefcaseText, summaryText;
@@ -66,7 +66,12 @@ public class TheFinalCase : MonoBehaviour
 
         if (selectedMaterial != null)
         {
-            foreach (Renderer renderer in briefcase.GetComponentsInChildren<Renderer>())
+            foreach (Renderer renderer in briefcase1.GetComponentsInChildren<Renderer>())
+            {
+                renderer.material = selectedMaterial;
+            }
+
+            foreach (Renderer renderer in briefcase2.GetComponentsInChildren<Renderer>())
             {
                 renderer.material = selectedMaterial;
             }
@@ -78,6 +83,7 @@ public class TheFinalCase : MonoBehaviour
             {
                 case "1000": openEffect = null; break;
                 case "1001": openEffect = skinEffectElectricity; break;
+                case "1002": openEffect = skinEffectShield; break;
                 default: openEffect = null; break;
             }
         }
