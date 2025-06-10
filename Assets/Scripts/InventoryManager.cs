@@ -49,10 +49,10 @@ public class InventoryManager : MonoBehaviour
 
 
         // for testing:
-        foreach (Skin skin in allSkins)
-        {
-            skin.IsUnlocked = false;
-        }
+        //foreach (Skin skin in allSkins)
+        //{
+        //    skin.IsUnlocked = false;
+        //}
         // --------------
 
         if (GetSelectedSkinForCategory("briefcase") == null)

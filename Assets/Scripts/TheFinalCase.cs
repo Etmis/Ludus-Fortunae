@@ -110,7 +110,6 @@ public class TheFinalCase : MonoBehaviour
                     Debug.Log(player.name);
                     Debug.Log(player.isAlive);
                     await ShowNextPlayer(player);
-                    //await ShowWarning(player);
                     await ShowBriefcase();
                 }
 
@@ -411,9 +410,5 @@ public class TheFinalCase : MonoBehaviour
         transition.SetTrigger("Start");
         await Task.Delay(1000);
         transition.SetTrigger("End");
-    }
-
-    private void sds()
-    {
     }
 }

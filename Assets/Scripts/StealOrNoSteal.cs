@@ -157,7 +157,6 @@ public class StealOrNoSteal : MonoBehaviour
         }
     }
 
-
     public void OnLeaderboardConfirmButtonClick()
     {
         GameData.Instance.players.Clear();
