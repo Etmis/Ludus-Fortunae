@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.18028378, g: 0.22571412, b: 0.30692285, a: 1}
+  m_IndirectSpecularColor: {r: 0.18028334, g: 0.22571328, b: 0.3069217, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -271,6 +271,16 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!1 &14684607 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: -340664950208455197, guid: d3b7d7ccd3a669b4aaf5c7861fdb577c, type: 3}
+  m_PrefabInstance: {fileID: 14684603}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &14684608 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: -3616520139351669325, guid: d3b7d7ccd3a669b4aaf5c7861fdb577c, type: 3}
+  m_PrefabInstance: {fileID: 14684603}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &47148859
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -7193,7 +7203,8 @@ MonoBehaviour:
   nextPlayerModal: {fileID: 1077539295}
   warning: {fileID: 299216476}
   votingModal: {fileID: 609761394}
-  briefcase: {fileID: 14684604}
+  briefcase1: {fileID: 14684608}
+  briefcase2: {fileID: 14684607}
   skinEffectElectricity: {fileID: 1684475524}
   skinEffectShield: {fileID: 753401718}
   skinBriefcaseRed: {fileID: 2100000, guid: e290c22a9146e2f4f9dca5cb6456ee91, type: 2}

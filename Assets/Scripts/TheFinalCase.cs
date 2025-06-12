@@ -66,12 +66,12 @@ public class TheFinalCase : MonoBehaviour
 
         if (selectedMaterial != null)
         {
-            foreach (Renderer renderer in briefcase1.GetComponentsInChildren<Renderer>())
+            foreach (Renderer renderer in briefcase1.GetComponents<Renderer>())
             {
                 renderer.material = selectedMaterial;
             }
 
-            foreach (Renderer renderer in briefcase2.GetComponentsInChildren<Renderer>())
+            foreach (Renderer renderer in briefcase2.GetComponents<Renderer>())
             {
                 renderer.material = selectedMaterial;
             }
