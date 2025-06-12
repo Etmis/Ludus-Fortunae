@@ -41,13 +41,6 @@ public class TheFinalCase : MonoBehaviour
 
     private async void Start()
     {
-        // potom smazat:
-        //GameData.Instance = new GameData();
-        //GameData.Instance.players.Add(new PlayerData(0, "name1", true, false));
-        //GameData.Instance.players.Add(new PlayerData(1, "name2", true, false));
-        //GameData.Instance.players.Add(new PlayerData(2, "name3", true, false));
-        //GameData.Instance.players.Add(new PlayerData(3, "name4", true, false));
-
         Skin skinBriefcase = InventoryManager.Instance.GetSelectedSkinForCategory("briefcase");
         Skin skinEffect = InventoryManager.Instance.GetSelectedSkinForCategory("effect");
 
@@ -66,12 +59,12 @@ public class TheFinalCase : MonoBehaviour
 
         if (selectedMaterial != null)
         {
-            foreach (Renderer renderer in briefcase1.GetComponentsInChildren<Renderer>())
+            foreach (Renderer renderer in briefcase1.GetComponents<Renderer>())
             {
                 renderer.material = selectedMaterial;
             }
 
-            foreach (Renderer renderer in briefcase2.GetComponentsInChildren<Renderer>())
+            foreach (Renderer renderer in briefcase2.GetComponents<Renderer>())
             {
                 renderer.material = selectedMaterial;
             }
@@ -292,7 +285,7 @@ public class TheFinalCase : MonoBehaviour
         votingModal.SetActive(true);
 
         float elapsedTime = 0f;
-        timerCircle.fillAmount = 1f; // Na startu je kole�ko pln�
+        timerCircle.fillAmount = 1f;
 
         while (!isConfirmVotingButtonClicked && elapsedTime < GameData.Instance.timeToAnswer)
         {
